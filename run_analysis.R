@@ -33,12 +33,12 @@ names(mastertbl)<-c("subjectnum", "activitynum", as.character(activitynames))
 
 keepflag<-ifelse(grepl("mean|std", names(mastertbl)), "keep", "drop") #filter vector defined for selected fields
 tmp1<-mastertbl[names(mastertbl)[keepflag=="keep"]]
-tmp1<-cbind(mastertbl$subjectnum, mastertbl$activitynum,tmp1)
 newnames<-names(tmp1)
+tmp1<-cbind(mastertbl$subjectnum, mastertbl$activitynum,tmp1)
 ID <- as.vector(paste("ID",as.character(1:81),sep=""))
 names(tmp1)<-ID
 tidytbl<-tmp1 %>% group_by(ID1, ID2) %>% summarise_each(funs(mean))  #calculate the statistics
 tmp2<-merge(activitylabels, tidytbl, by.x = "V1", by.y="ID2")
 output<-select(tmp2, -V1)
-names(output)<-newnames
+names(output)<-c("activityname", "subjectnumber",newnames)
 write.table(output,"tidyoutput.csv", row.name=FALSE) #generate output file
