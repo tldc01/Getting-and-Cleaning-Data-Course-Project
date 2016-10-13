@@ -24,21 +24,21 @@ mastertbl<-rbind(trainmaster,testmaster)  #consolidates training and testing dat
 datameans<-colMeans(mastertbl)
 datastdev<-sapply(mastertbl,sd)
 
-# Q3.  Assign the activity names to an object
+# Q3 & Q4.  Assign the activity names to an object and label columns with descriptive names
 
 activitynames<-features[,2]
-
-# Q4.  Label the columns of the combined dataset w/ descriptive names
-
 names(mastertbl)<-c("subjectnum", "activitynum", as.character(activitynames))
 
 # Q5. Create new data frame rolling up average to subject and activity
 
-newtbl<-mastertbl
-ID <- as.vector(paste("ID",as.character(1:563),sep=""))
-names(newtbl)<-ID
-tidytbl<-newtbl %>% group_by(ID1, ID2) %>% summarise_each(funs(mean))
-tmp<-merge(activitylabels, tidytbl, by.x = "V1", by.y="ID2")
-output<-select(tmp, -V1)
-names(output)<-c("activity","subjectnum",as.character(activitynames))
-write.table(output,"tidyoutput.csv", row.name=FALSE)
+keepflag<-ifelse(grepl("mean|std", names(mastertbl)), "keep", "drop") #filter vector defined for selected fields
+tmp1<-mastertbl[names(mastertbl)[keepflag=="keep"]]
+tmp1<-cbind(mastertbl$subjectnum, mastertbl$activitynum,tmp1)
+newnames<-names(tmp1)
+ID <- as.vector(paste("ID",as.character(1:81),sep=""))
+names(tmp1)<-ID
+tidytbl<-tmp1 %>% group_by(ID1, ID2) %>% summarise_each(funs(mean))  #calculate the statistics
+tmp2<-merge(activitylabels, tidytbl, by.x = "V1", by.y="ID2")
+output<-select(tmp2, -V1)
+names(output)<-newnames
+write.table(output,"tidyoutput.csv", row.name=FALSE) #generate output file
