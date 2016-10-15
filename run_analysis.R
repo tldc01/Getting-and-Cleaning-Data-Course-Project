@@ -41,4 +41,4 @@ tidytbl<-tmp1 %>% group_by(ID1, ID2) %>% summarise_each(funs(mean))  #calculate 
 tmp2<-merge(activitylabels, tidytbl, by.x = "V1", by.y="ID2")
 output<-select(tmp2, -V1)
 names(output)<-c("activityname", "subjectnumber",newnames)
-write.table(output,"tidyoutput.csv", row.name=FALSE) #generate output file
+write.table(output,"tidyoutput.txt", row.names = FALSE) #generate output file
